@@ -1,4 +1,5 @@
 require('dotenv').config({ path: './config.env' });
+const sequelize = require('./database');
 
 process.on('uncaughtException', err => {
   console.log(err.name, err.message);
@@ -7,6 +8,8 @@ process.on('uncaughtException', err => {
 });
 
 const app = require('./app');
+
+sequelize.sync().then(() => console.log('DB is ready'));
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
