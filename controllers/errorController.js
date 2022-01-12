@@ -1,5 +1,11 @@
 const AppError = require('../utils/appError');
 
+const handleSequelizeValidationError = err => {
+  // const msg = `${err.errors[0].type}: format must be: ${...err.errors[0].validatorArgs[0]}`;
+  const msg = `${err.errors[0].type}: accepted values are ${err.errors[0].validatorArgs[0]}`;
+  return new AppError(msg, 400);
+};
+
 const handleSequelizeUniqueConstraintError = err => {
   const msg = err.errors[0].message;
   return new AppError(msg, 400);
@@ -70,6 +76,7 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
     if (err.name === 'SequelizeUniqueConstraintError')
       error = handleSequelizeUniqueConstraintError(error);
+    if (err.name === 'SequelizeValidationError') error = handleSequelizeValidationError(error);
 
     sendErrorProd(error, req, res);
   }

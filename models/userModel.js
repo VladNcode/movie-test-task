@@ -8,7 +8,7 @@ User.init(
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: { args: [true], msg: 'Username already exists' },
+      unique: { args: [true], msg: 'This username is already in use' },
       validate: {
         len: {
           args: [6, 24],
@@ -19,7 +19,7 @@ User.init(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: { args: [true], msg: 'This email address is already in use' },
       validate: {
         isEmail: true,
       },

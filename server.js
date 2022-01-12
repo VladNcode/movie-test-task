@@ -9,7 +9,7 @@ process.on('uncaughtException', err => {
 
 const app = require('./app');
 
-sequelize.sync().then(() => console.log('DB is ready'));
+sequelize.sync({ force: true }).then(() => console.log('DB is ready'));
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
