@@ -5,12 +5,12 @@ const movieController = require('../controllers/movieController');
 const router = express.Router();
 
 router.route('/').get(movieController.list).post(movieController.create);
-router.route('/import').post(movieController.import);
+router.route('/import').post(movieController.uploadMult, movieController.import);
 
 router
   .route('/:id')
   .get(movieController.show)
   .patch(movieController.update)
-  .delete(movieController.create);
+  .delete(movieController.delete);
 
 module.exports = router;
