@@ -1,66 +1,71 @@
-const { Movie, Actor } = require('../models/movieModel');
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const { Op } = require('sequelize');
 const fs = require('fs');
+const { Op } = require('sequelize');
+const { Movie } = require('../models/movieModel');
+const catchAsync = require('../utils/catchAsync');
+// const AppError = require('../utils/appError');
 
-// fs.readFile(__dirname + '/../movies.txt', async (error, data) => {
-//   if (error) {
-//     throw error;
-//   }
-//   const movie = await Movie.create({
-//     title: data.toString().split('\n\n')[0].split('\n')[0],
-//     year: data.toString().split('\n\n')[0].split('\n')[1],
-//     format: data.toString().split('\n\n')[0].split('\n')[2],
-//     actors: data.toString().split('\n\n')[0].split('\n')[3],
-//   });
+exports.import = catchAsync(async (req, res) => {
+  let movies = fs.readFileSync(`${__dirname}/../sample.txt`, 'utf-8');
+  movies = movies.trim().replace(/(Title: |Release Year: |Format: |Stars: )/g, '');
+  const length = movies.split('\n\n').length;
+  // console.log(length);
 
-//   // return data.toString().split('\n\n')[0].split('\n');
-//   // console.log(data.toString().split('\n\n')[0].split('\n'));
-// });
+  for (let i = 0; i < length; i++) {
+    let arr = [];
+    let data = tours.split('\n\n')[i].split('\n');
+    data[3].split(',').forEach(star => arr.push(star.replace(/^ /, '')));
 
-exports.create = catchAsync(async (req, res, next) => {
-  const movie = await Movie.create({
-    title: req.body.title,
-    year: req.body.year,
-    format: req.body.format,
-    actors: req.body.actors,
-  });
-
-  // let tours = fs.readFileSync(`${__dirname}/../movies.txt`, 'utf-8');
-
-  // tours = tours.trim().replace(/(title: |year: |format: |actors: )/g, '');
-  // console.log(tours.split('\n\n').length);
-
-  // for (let i = 0; i < tours.length - 1; i++) {
-  //   let arr = [];
-  //   tours
-  //     .split('\n\n')
-  //     [i].split('\n')[3]
-  //     .split(',')
-  //     .forEach(star => arr.push(star.replace(/^ /, '')));
-  //   // arr.push(tours.split('\n\n')[i].split('\n')[3].split(','));
-  //   await Movie.create({
-  //     title: tours.split('\n\n')[i].split('\n')[0],
-  //     year: tours.split('\n\n')[i].split('\n')[1],
-  //     format: tours.split('\n\n')[i].split('\n')[2],
-  //     actors: arr,
-  //     // actors: `["${tours.split('\n\n')[i].split('\n')[3].replace(/, /g, '", "')}"]`,
-  //   });
-  // }
+    await Movie.create({
+      title: data[0],
+      year: data[1],
+      format: data[2],
+      actors: arr,
+    });
+  }
 
   res.status(201).json({
     status: 'success',
     data: {
-      data: movie,
+      data: 'hello',
     },
   });
 });
 
-exports.getAll = catchAsync(async (req, res, next) => {
-  console.log(req.query.actor);
-  const movies = await Movie.findAll();
-  // const movies = await Movie.findAll({ where: { actors: { [Op.substring]: req.query.actor } } });
+exports.list = catchAsync(async (req, res) => {
+  const allowedSort = ['id', 'title', 'year'];
+  const allowedOrder = ['ASC', 'DESC'];
+  const sort = allowedSort.includes(req.query.sort) ? req.query.sort : 'id';
+  const order = allowedOrder.includes(req.query.order) ? req.query.order : 'ASC';
+  const limit = req.query.limit > 0 && req.query.limit < 100 ? req.query.limit : 20;
+  const offset = req.query.offset > 0 && req.query.offset < 100000 ? req.query.offset : 0;
+
+  const query = {
+    order: [[sort, order]],
+    limit,
+    offset,
+  };
+
+  if (req.query.actor && req.query.search) {
+    query.where = {
+      actors: { [Op.substring]: req.query.actor },
+      title: { [Op.substring]: req.query.search },
+    };
+  }
+
+  if (req.query.actor) {
+    query.where = { actors: { [Op.substring]: req.query.actor } };
+  }
+
+  if (req.query.search) {
+    query.where = {
+      [Op.or]: [
+        { actors: { [Op.substring]: req.query.search } },
+        { title: { [Op.substring]: req.query.search } },
+      ],
+    };
+  }
+
+  const movies = await Movie.findAll(query);
 
   res.status(200).json({
     status: 'success',
@@ -70,3 +75,23 @@ exports.getAll = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.create = catchAsync(async (req, res, next) => {
+  const movie = await Movie.create({
+    title: req.body.title,
+    year: req.body.year,
+    format: req.body.format,
+    actors: req.body.actors,
+  });
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      movie,
+    },
+  });
+});
+
+exports.show = catchAsync(async (req, res) => {});
+exports.update = catchAsync(async (req, res) => {});
+exports.delete = catchAsync(async (req, res) => {});

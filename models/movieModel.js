@@ -33,42 +33,8 @@ Movie.init(
       },
     },
     actors: { type: DataTypes.JSON },
-    // actors: { type: DataTypes.STRING },
   },
   { sequelize, modelName: 'movie' }
 );
 
-class Actor extends Model {}
-Actor.init(
-  {
-    fullname: { type: DataTypes.STRING },
-    // movies: { type: DataTypes.JSON },
-  },
-  { sequelize, modelName: 'actor' }
-);
-
-// class ActorMovies extends Model {}
-// ActorMovies.init(
-//   {
-//     Movie: {
-//       type: DataTypes.INTEGER,
-//       references: {
-//         model: Movie, // 'Movies' would also work
-//         key: 'id',
-//       },
-//     },
-//     Actors: {
-//       type: DataTypes.INTEGER,
-//       references: {
-//         model: Actor, // 'Actors' would also work
-//         key: 'id',
-//       },
-//     },
-//   },
-//   { sequelize, modelName: 'actorMovies' }
-// );
-
-// Movie.belongsToMany(Actor, { through: ActorMovies });
-// Actor.belongsToMany(Movie, { through: ActorMovies });
-
-module.exports = { Movie, Actor };
+module.exports = { Movie };
