@@ -1,9 +1,6 @@
 const AppError = require('../utils/appError');
 
 const handleSequelizeValidationError = err => {
-  // const msg = `${err.errors[0].type}: format must be: ${...err.errors[0].validatorArgs[0]}`;
-  // const msg = `${err.errors[0].type}: accepted values are ${err.errors[0].validatorArgs[0]}`;
-  // console.log(err.message);
   const msg = err.message;
   return new AppError(msg, 400);
 };
@@ -66,9 +63,9 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, req, res);
-  } else if (process.env.NODE_ENV === 'production') {
+  } else if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') {
     let error = { ...err };
     error.message = err.message;
     if (err.name === 'CastError') error = handleCastErrorDB(error);

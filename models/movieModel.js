@@ -25,6 +25,7 @@ Movie.init(
     },
     format: {
       type: DataTypes.STRING,
+      allowNull: false,
       validate: {
         isIn: {
           args: [['VHS', 'DVD', 'Blu-Ray']],
@@ -32,9 +33,9 @@ Movie.init(
         },
       },
     },
-    actors: { type: DataTypes.JSON },
+    actors: { type: DataTypes.JSON, allowNull: false },
   },
   { sequelize, modelName: 'movie' }
 );
 
-module.exports = { Movie };
+module.exports = Movie;

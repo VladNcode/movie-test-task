@@ -1,6 +1,6 @@
 const multer = require('multer');
 const { Op } = require('sequelize');
-const { Movie } = require('../models/movieModel');
+const Movie = require('../models/movieModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
