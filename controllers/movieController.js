@@ -43,9 +43,7 @@ exports.import = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success',
-    data: {
-      data: 'hello',
-    },
+    message: 'Movies success imported!',
   });
 });
 
@@ -128,6 +126,7 @@ exports.show = catchAsync(async (req, res, next) => {
     },
   });
 });
+
 exports.update = catchAsync(async (req, res, next) => {
   const movie = await Movie.findOne({
     where: {
@@ -148,6 +147,7 @@ exports.update = catchAsync(async (req, res, next) => {
     },
   });
 });
+
 exports.delete = catchAsync(async (req, res, next) => {
   const movie = await Movie.destroy({
     where: {
