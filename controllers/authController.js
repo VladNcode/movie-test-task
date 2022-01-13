@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const catchAsync = require('../utils/catchAsync');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
@@ -62,22 +61,11 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 exports.signup = catchAsync(async (req, res, next) => {
-  if (req.body.password.length < 8 || req.body.password.length > 24) {
-    return next(new AppError('Passwords must be between 8 and 24 characters', 400));
-  }
-
-  if (req.body.password !== req.body.confirmPassword) {
-    return next(new AppError('Passwords does not match', 400));
-  }
-
-  const salt = await bcrypt.genSalt(12);
-  const cryptoPassword = await bcrypt.hash(req.body.password, salt);
-
-  // 1) create a newUser from body data
   const newUser = await User.create({
     username: req.body.username,
     email: req.body.email,
-    password: cryptoPassword,
+    password: req.body.password,
+    confirmPassword: req.body.confirmPassword,
   });
   createSendToken(newUser, 201, req, res);
 });
@@ -94,7 +82,8 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError('Please enter correct email and password', 401));
 
   // 3) Check if password is valid
-  if (!(await bcrypt.compare(password, user.password))) {
+  // if (!(await bcrypt.compare(password, user.password))) {
+  if (!(await User.validatePassword(password, user.password))) {
     return next(new AppError('Please enter correct email and password', 401));
   }
 

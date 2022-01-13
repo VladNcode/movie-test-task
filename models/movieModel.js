@@ -15,11 +15,21 @@ Movie.init(
         },
       },
     },
-    year: { type: DataTypes.INTEGER, allowNull: false },
+    year: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: { args: 1888, msg: 'First movie was filmed in 1888' },
+        max: { args: 2030, msg: 'Are you from future? :) Accepted years range 1888 - 2030' },
+      },
+    },
     format: {
       type: DataTypes.STRING,
       validate: {
-        isIn: [['VHS', 'DVD', 'Blu-Ray']],
+        isIn: {
+          args: [['VHS', 'DVD', 'Blu-Ray']],
+          msg: 'Accepted formats: VHS, DVD, Blu-Ray',
+        },
       },
     },
     actors: { type: DataTypes.JSON },

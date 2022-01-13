@@ -2,7 +2,9 @@ const AppError = require('../utils/appError');
 
 const handleSequelizeValidationError = err => {
   // const msg = `${err.errors[0].type}: format must be: ${...err.errors[0].validatorArgs[0]}`;
-  const msg = `${err.errors[0].type}: accepted values are ${err.errors[0].validatorArgs[0]}`;
+  // const msg = `${err.errors[0].type}: accepted values are ${err.errors[0].validatorArgs[0]}`;
+  // console.log(err.message);
+  const msg = err.message;
   return new AppError(msg, 400);
 };
 
