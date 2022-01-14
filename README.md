@@ -123,7 +123,8 @@ http://localhost:8000/api/v1/movies/query GET
 Query options:
 actor: Search by actor
 title: Search by title
-search AND actor: find a movie by name with an actor in it
+actor AND title: find a movie by name and with an actor in it
+search: find movie by title or actor
 sort: Possible values: id, title, year. Default: id
 order: Possible values: ASC, DESC. Default: ASC
 limit: Between 1 and 100. Default: 20
