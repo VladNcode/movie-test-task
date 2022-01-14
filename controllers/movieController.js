@@ -16,7 +16,7 @@ const upload = multer({
   limits: { fileSize: 500000 },
 });
 
-exports.uploadMult = upload.single('list');
+exports.uploadMult = upload.single('movies');
 
 exports.import = catchAsync(async (req, res, next) => {
   if (!req.file) {
@@ -26,7 +26,6 @@ exports.import = catchAsync(async (req, res, next) => {
   let movies = req.file.buffer.toString('utf8');
   movies = movies.trim().replace(/(Title: |Release Year: |Format: |Stars: )/g, '');
   const length = movies.split('\n\n').length;
-  // console.log(length);
 
   for (let i = 0; i < length; i++) {
     let arr = [];

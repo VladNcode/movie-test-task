@@ -18,12 +18,8 @@ beforeEach(async () => {
     .post('/api/v1/users/login')
     .send({ email: 'pika@example.com', password: 'password' });
 
-  // console.log(res.body.token);
-
   token = res.body.token;
   id = res.body.data.user.id;
-
-  // console.log(token, id);
 });
 
 afterEach(async () => {
