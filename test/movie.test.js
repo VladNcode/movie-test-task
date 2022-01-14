@@ -1,11 +1,10 @@
 require('dotenv').config({ path: './config.env' });
 const request = require('supertest');
-const path = require('path');
 const app = require('../app');
 const sequelize = require('../database');
 const User = require('../models/userModel');
 const Movie = require('../models/movieModel');
-let { userOne, userTwo, token, id } = require('./fixtures/config');
+let { userOne, token, id, movieId } = require('./fixtures/config');
 
 beforeAll(async () => {
   await sequelize.sync({ force: true }).then(() => console.log('DB is ready'));
@@ -16,12 +15,8 @@ beforeAll(async () => {
     .post('/api/v1/users/login')
     .send({ email: 'pika@example.com', password: 'password' });
 
-  // console.log(res.body.token);
-
   token = res.body.token;
   id = res.body.data.user.id;
-
-  // console.log(token, id);
 });
 
 beforeEach(async () => {
@@ -229,5 +224,73 @@ test('Should NOT be able get a single movie if unauthorized', async () => {
 });
 
 test('Should NOT be able to import movies if unauthorized', async () => {
-  await request(app).post('/api/v1/movies/import/').expect(401);
+  await request(app).post(`/api/v1/movies/import/`).expect(401);
+});
+
+test('Should be able to get filtered movies', async () => {
+  await request(app)
+    .post('/api/v1/movies/')
+    .send({
+      title: 'Jaws',
+      year: 1975,
+      format: 'DVD',
+      actors: ['Roy Scheider', 'Robert Shaw', 'Richard Dreyfuss', 'Lorraine Gary'],
+    })
+    .set('Authorization', 'Bearer ' + token);
+
+  await request(app)
+    .post('/api/v1/movies/')
+    .send({
+      title: 'Harvey',
+      year: 1950,
+      format: 'DVD',
+      actors: ['James Stewart', 'Josephine Hull', 'Peggy Dow', 'Charles Drake'],
+    })
+    .set('Authorization', 'Bearer ' + token);
+
+  await request(app)
+    .post('/api/v1/movies/')
+    .send({
+      title: 'Casablanca',
+      year: 1942,
+      format: 'DVD',
+      actors: ['Humphrey Bogart', 'Ingrid Bergman', 'Claude Rains', 'Peter Lorre'],
+    })
+    .set('Authorization', 'Bearer ' + token);
+
+  await request(app)
+    .post('/api/v1/movies/')
+    .send({
+      title: 'Young Frankenstein',
+      year: 1974,
+      format: 'VHS',
+      actors: ['Gene Wilder', 'Kenneth Mars', 'Terri Garr', 'Gene Hackman', 'Peter Boyle'],
+    })
+    .set('Authorization', 'Bearer ' + token);
+
+  let res = await request(app)
+    .get('/api/v1/movies?actor=Peter')
+    .set('Authorization', 'Bearer ' + token);
+
+  expect(res.body.results).toBe(2);
+
+  res = await request(app)
+    .get('/api/v1/movies')
+    .set('Authorization', 'Bearer ' + token);
+  expect(res.body.results).toBe(5);
+
+  res = await request(app)
+    .get('/api/v1/movies?limit=1')
+    .set('Authorization', 'Bearer ' + token);
+  expect(res.body.results).toBe(1);
+
+  res = await request(app)
+    .get('/api/v1/movies?search=Casa')
+    .set('Authorization', 'Bearer ' + token);
+  expect(res.body.data.movies[0].title).toBe('Casablanca');
+
+  res = await request(app)
+    .get('/api/v1/movies?sort=title&order=DESC')
+    .set('Authorization', 'Bearer ' + token);
+  expect(res.body.data.movies[0].title).toBe('Young Frankenstein');
 });

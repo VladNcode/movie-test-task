@@ -128,6 +128,10 @@ exports.show = catchAsync(async (req, res, next) => {
 });
 
 exports.update = catchAsync(async (req, res, next) => {
+  if (!Object.keys(req.body).length) {
+    return next(new AppError('You need to provide some data to update a movie', 400));
+  }
+
   const movie = await Movie.findOne({
     where: {
       id: req.params.id,

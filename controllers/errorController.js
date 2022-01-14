@@ -6,7 +6,7 @@ const handleSequelizeValidationError = err => {
 };
 
 const handleSequelizeUniqueConstraintError = err => {
-  const msg = err.errors[0].message;
+  const msg = `${err.errors[0].message}: ${err.errors[0].value}`;
   return new AppError(msg, 400);
 };
 
