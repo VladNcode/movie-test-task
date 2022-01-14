@@ -131,7 +131,7 @@ limit: Between 1 and 100. Default: 20
 offset: Default: 0
 
 examples:
-http://localhost:8000/api/v1/movies?actor=Peter&search=Casa
+http://localhost:8000/api/v1/movies?actor=Peter&title=Casa
 http://localhost:8000/api/v1/movies?limit=50&offset=5&sort=title&order=DESC
 ```
 
