@@ -6,7 +6,7 @@ This is a movie API I've made as a test task
 
 ```
 NODE_ENV=production
-PORT=5000
+PORT=8000
 
 JWT_SECRET=your_very_extremely_super_enormously_secret_key
 JWT_EXPIRES_IN=90d
