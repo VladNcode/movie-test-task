@@ -60,14 +60,16 @@ exports.list = catchAsync(async (req, res) => {
     offset,
   };
 
-  if (req.query.actor && req.query.search) {
+  if (req.query.actor && req.query.title) {
     query.where = {
-      actors: { [Op.substring]: req.query.actor },
-      title: { [Op.substring]: req.query.search },
+      [Op.and]: [
+        { actors: { [Op.substring]: req.query.actor } },
+        { title: { [Op.substring]: req.query.title } },
+      ],
     };
-  }
-
-  if (req.query.actor) {
+  } else if (req.query.title) {
+    query.where = { title: { [Op.substring]: req.query.title } };
+  } else if (req.query.actor) {
     query.where = { actors: { [Op.substring]: req.query.actor } };
   }
 
